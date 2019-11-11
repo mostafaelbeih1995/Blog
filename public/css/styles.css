@@ -1,0 +1,11 @@
+.customLink{
+    color: darkgrey;
+    margin-right: 1em;
+}
+.customLink:hover{
+    color: darkgrey;
+}
+
+.custom-nav{
+    margin-bottom: 2em;;
+}
