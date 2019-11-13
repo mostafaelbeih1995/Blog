@@ -1,5 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const lodash = require('lodash');
+
 
 let postsArray = [];
 const app = express();
@@ -18,7 +20,10 @@ app.set('view engine', 'ejs');
 app.use(express.static("public"));
 
 app.get("/", (req,res) => {
-    res.render('home', {content: homeStartingContent});
+    res.render('home', {
+        content: homeStartingContent,
+        posts: postsArray
+    });
 });
 
 app.get("/about", (req, res) => {
@@ -42,6 +47,16 @@ app.post("/compose", (req, res) => {
     res.redirect("/");
 });
 
-app.listen(3000, () => {
+app.listen(3000, () => { 
     console.log("Listening on port 3000");
+});
+
+app.get("/posts/:postName", (req, res) => {
+    const requestedTitle = lodash.lowerCase(req.params.postName);
+    postsArray.forEach(post => {
+        const existingTitle = lodash.lowerCase(post.title);
+        if (existingTitle === requestedTitle) {
+            res.render("singlePost", { post:post});
+        }
+    });
 });
