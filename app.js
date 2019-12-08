@@ -1,6 +1,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const lodash = require('lodash');
+const mongoose = require("mongoose");
+const Post = require("./models/post");
 
 
 let postsArray = [];
@@ -19,11 +21,24 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 app.use(express.static("public"));
 
-app.get("/", (req,res) => {
+app.get("/", (req, res) => {
+    // Post.find().then(posts => {
+    //     postsArray = posts;
+    //     console.log(postsArray)
+    // });
+    Post.find((err, posts) => {
+        if (err) {
+            console.log("Error retreiving from database");
+        }
+        else {
+            postsArray = posts;
+            console.log(postsArray);
+        }
+    })
     res.render('home', {
         content: homeStartingContent,
         posts: postsArray
-    });
+    }); 
 });
 
 app.get("/about", (req, res) => {
@@ -39,11 +54,13 @@ app.get("/compose", (req, res) => {
 });
 
 app.post("/compose", (req, res) => {
-    const post = {
+    const post = new Post({
         title: req.body.title,
         body: req.body.body
-    };
-    postsArray.push(post);
+    });
+    // postsArray.push(post);
+    //add post to database
+    post.save();
     res.redirect("/");
 });
 
@@ -60,3 +77,36 @@ app.get("/posts/:postName", (req, res) => {
         }
     });
 });
+
+mongoose.connect('mongodb+srv://mostafaelbeih:Kendrick_lamar_222@cluster0-erbgg.mongodb.net/test?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true})
+    .then(() => {
+        console.log("Connected Database Successfully");
+    })
+    .catch(() => {
+        console.log("Connection failed");
+    })
+    ;
+
+//Database Part
+
+// const MongoClient = require('mongodb').MongoClient;
+// const assert = require('assert');
+
+// Connection URL
+// const url = 'mongodb://localhost:27017';
+
+// // Database Name
+// const dbName = 'BlogDatabase';
+
+// // Create a new MongoClient
+// const client = new MongoClient(url, { useUnifiedTopology: true});
+
+// // Use connect method to connect to the Server
+// client.connect(function(err) {
+//   assert.equal(null, err);
+//   console.log("Connected successfully to server");
+
+//   const db = client.db(dbName);
+
+//   client.close();
+// });
