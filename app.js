@@ -34,11 +34,13 @@ app.get("/", (req, res) => {
             postsArray = posts;
             console.log(postsArray);
         }
+    }).then(() => {
+        res.render('home', {
+            content: homeStartingContent,
+            posts: postsArray
+        }); 
     })
-    res.render('home', {
-        content: homeStartingContent,
-        posts: postsArray
-    }); 
+    
 });
 
 app.get("/about", (req, res) => {
@@ -60,8 +62,9 @@ app.post("/compose", (req, res) => {
     });
     // postsArray.push(post);
     //add post to database
-    post.save();
-    res.redirect("/");
+    post.save().then(() => {
+        res.redirect("/");
+    });
 });
 
 app.listen(3000, () => { 
